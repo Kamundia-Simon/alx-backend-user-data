@@ -4,6 +4,10 @@ import re
 from typing import List
 
 
+patterns = {
+    'extract': lambda x, y: r'(?P<field>{})=[^{}]*'.format('|'.join(x), y),
+    'replace': lambda x: r'\g<field>={}'.format(x),
+}
 def filter_datum(
         fields: List[str],
         redaction: str,
@@ -11,6 +15,5 @@ def filter_datum(
         separator: str
 ) -> str:
     """Obfuscates specified fields."""
-    pattern = f"({'|'.join(fields)})=[^;]+"
-    return re.sub(
-            pattern, lambda match: f"{match.group(1)}={redaction}", message)
+    extract, replace = (patterns["extract"], patterns["replace"])
+    return re.sub(extract(fields, separator), replace(redaction), message)
