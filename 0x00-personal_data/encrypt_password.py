@@ -4,6 +4,7 @@ encrypt password
 """
 import bcrypt
 
+
 def hash_password(password: str) -> bytes:
     """
     Hash a password with a randomly generated salt
