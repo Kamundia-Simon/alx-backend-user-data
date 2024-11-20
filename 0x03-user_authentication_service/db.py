@@ -18,7 +18,7 @@ class DB:
     def __init__(self) -> None:
         """Initialize a new DB instance
         """
-        self._engine = create_engine("sqlite:///a.db", echo=True)
+        self._engine = create_engine("sqlite:///a.db", echo=False)
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
@@ -34,23 +34,24 @@ class DB:
 
     def add_user(self, email: str, hashed_password: str) -> User:
         """Add a new user to the database"""
-        user = User(email=email, hashed_password=hashed_password)
+        new_user = User(email=email, hashed_password=hashed_password)
         try:
-            self._session.add(user)
+            self._session.add(new_user)
             self._session.commit()
         except Exception as e:
             print(f"Error adding new user to database: {e}")
             self._session.rollback()
             raise
-        return user
+        return new_user
 
     def find_user_by(self, **kwargs: Dict[str, str]) -> User:
         """find a user"""
-        session = self._session
+        if not kwargs:
+            raise InvalidRequestError("No arguments provided")
         try:
-            user = session.query(User).filter_by(**kwargs).one()
-        except NoResultFound:
-            raise NoResultFound()
-        except InvalidRequestError:
-            raise InvalidRequestError()
-        return user
+            user = self._session.query(User).filter_by(**kwargs).one()
+            return user
+        except NoResultFound as e:
+            raise NoResultFound("No user found matching the criteria") from e
+        except Exception as e:
+            raise InvalidRequestError("Invalid query arguments") from e
