@@ -46,12 +46,11 @@ class DB:
 
     def find_user_by(self, **kwargs: Dict[str, str]) -> User:
         """find a user"""
-        if not kwargs:
-            raise InvalidRequestError("No arguments provided")
+        session = self._session
         try:
-            user = self._session.query(User).filter_by(**kwargs).one()
-            return user
-        except NoResultFound as e:
-            raise NoResultFound("No user found matching the criteria") from e
-        except Exception as e:
-            raise InvalidRequestError("Invalid query arguments") from e
+            user = session.query(User).filter_by(**kwargs).one()
+        except NoResultFound:
+            raise NoResultFound()
+        except InvalidRequestError:
+            raise InvalidRequestError()
+        return user
