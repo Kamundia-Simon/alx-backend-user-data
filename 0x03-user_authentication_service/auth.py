@@ -10,13 +10,6 @@ from sqlalchemy.orm.exc import NoResultFound
 import uuid import uuid4
 
 
-def _generate_uuid() -> str:
-    """
-    Generate a new UUID and return str represntation
-    """
-    return str(uuid4())
-
-
 def _hash_password(password: str) -> bytes:
     """hash a password using bcrypt"""
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -28,6 +21,12 @@ class Auth:
 
     def __init__(self):
         self._db = DB()
+
+    def _generate_uuid() -> str:
+    """
+    Generate a new UUID and return str represntation
+    """
+    return str(uuid4())
 
     def register_user(self, email: str, password: str) -> User:
         """register new user with given password and email"""
