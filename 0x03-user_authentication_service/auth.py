@@ -90,6 +90,6 @@ class Auth:
             user = None
         if user is None:
             raise ValueError()
-        token =  _generate_uuid()
+        token =  str(uuid.uuid4())
         self._db.update_user(user.id, token=token)
         return token
