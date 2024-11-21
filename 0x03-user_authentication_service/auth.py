@@ -92,4 +92,4 @@ class Auth:
             raise ValueError()
         token =  _generate_uuid()
         self._db.update_user(user.id, token=token)
-        return reset_token
+        return token
